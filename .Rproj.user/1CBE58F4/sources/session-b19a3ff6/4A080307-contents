@@ -1,0 +1,83 @@
+---
+title: "Visualization"
+name: "Aldo Enrique FERNANDEZ FRAGOSO"
+format: html
+editor: visual
+---
+
+```{r}
+streaming <- read_csv("data/data_streaming/all_streaming.csv")
+streaming
+```
+
+\
+
+Lets check the columns
+
+```{r}
+names(streaming)
+```
+
+Count the number of movies and by channel streaming
+
+```{r}
+streaming |>
+  select(channel_streaming, title) |>
+  group_by(channel_streaming) |>
+  summarise(title_count = n()) |>
+  arrange(desc(title_count))
+  
+
+```
+
+Get rid of the full name of the channel and only the platform
+
+```{r}
+names(streaming)
+streaming <- streaming |>
+  mutate(platform = word(channel_streaming, 1, sep = "-")) |>
+  select(-channel_streaming)
+
+relocate(streaming,platform)
+
+```
+
+What are our plans now? To see which platform has the more "classical/old" movies
+
+```{r}
+only_movies <- streaming |>
+  filter(movie_or_serie == "Movie") |>
+  select(-movie_or_serie)
+
+only_movies
+```
+
+We have movies from 1927 till 2019 a classical movie is until 1969, after that is considered a contemporary film
+
+```{r}
+only_movies |>
+  group_by(release_year) |>
+  summarise(title = n()) |>
+  arrange(desc(title))
+  
+classification <- only_movies |>
+  mutate(classical = case_when(
+  release_year <=1969 ~ 'classical',
+  release_year >=1970 ~ 'contemporary'))
+  
+```
+
+We check how many classical movies each platform has
+
+```{r}
+classification$platform <- factor(classification$platform)
+levels(classification$platform)
+```
+
+```{r}
+classification |>
+  ggplot(aes(x=fct_infreq(platform), fill=classical)) +
+  geom_bar(position = "dodge")+
+  geom_text(stat='count', aes(label=after_stat(count))) +
+  labs(x="Platform", y="Number of movies", fill='Category', title='Movies by platform', subtitle = "A movie before 1969 is considered classical")
+```

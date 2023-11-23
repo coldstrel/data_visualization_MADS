@@ -1,0 +1,5 @@
+"0","classification$classical <- as.character(classification$classical)
+levels(classification$classical)
+"
+"1","NULL
+"

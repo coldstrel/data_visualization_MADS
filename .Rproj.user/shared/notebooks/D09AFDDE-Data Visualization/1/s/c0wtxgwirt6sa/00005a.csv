@@ -1,0 +1,5 @@
+"0","classification |>"
+"0","  ggplot(aes(x=fct_infreq(platform), fill=classical)) +"
+"0","  geom_bar(position = ""dodge"")+"
+"0","  geom_text(stat='count', aes(label=after_stat(count))) +"
+"0","  labs(x=""Platform"", y=""Number of movies"", fill='Category', title='Movies by platform', subtitle = ""A movie before 1969 is considered classical"")"
